@@ -15,55 +15,44 @@
     <div id="content"></div>
     <script type="text/babel">
 
-    var data = [
-      {id: 1, author: "Pete Hunt", text: "This is one comment"},
-      {id: 2, author: "Jordan Walke", text: "This is *another* comment"}
-    ];
-
-
-    var Comment = React.createClass({
+    var Checkpoint = React.createClass({
       render: function() {
         return (
-          <div className="comment">
-            <h2 className="commentAuthor">
-              {this.props.author}
-            </h2>
-            {this.props.children}
+          <div className="checkpoint">
+              <b>{this.props.address}:</b> {this.props.question}
           </div>
         );
       }
     });
 
-    var CommentList = React.createClass({
+    var CheckpointList = React.createClass({
       render: function() {
-        var commentNodes = this.props.data.map(function(comment) {
+        var commentNodes = this.props.data.map(function(checkpoint) {
           return (
-            <Comment author={comment.author} key={comment.id}>
-              {comment.text}
-            </Comment>
+            <Checkpoint address={checkpoint.address} question={checkpoint.question} key={checkpoint.id} />
           );
         });
         return (
-          <div className="commentList">
+          <div className="checkpointList">
             {commentNodes}
           </div>
         );
       }
     });
 
-    var CommentForm = React.createClass({
+    var CheckpointForm = React.createClass({
       render: function() {
         return (
-          <div className="commentForm">
-            Hello, world! I am a CommentForm.
+          <div className="checkpointForm">
+            Hello, world! I am a CheckpointForm.
           </div>
         );
       }
     });
 
 
-    var CommentBox = React.createClass({
-      loadCommentsFromServer: function() {
+    var CheckpointBox = React.createClass({
+      loadCheckpointsFromServer: function() {
         $.ajax({
           url: this.props.url,
           dataType: 'json',
@@ -80,30 +69,24 @@
         return {data: []};
       },
       componentDidMount: function() {
-        this.loadCommentsFromServer();
-        setInterval(this.loadCommentsFromServer, this.props.pollInterval);
+        this.loadCheckpointsFromServer();
+        setInterval(this.loadCheckpointsFromServer, this.props.pollInterval);
       },
       render: function() {
         return (
-          <div className="commentBox">
-            <h1>Comments</h1>
-            <CommentList data={this.state.data} />
-            <CommentForm />
+          <div className="checkpointBox">
+            <h1>Add a checkpoint</h1>
+            <CheckpointForm />
+            <CheckpointList data={this.state.data} />
           </div>
         );
       }
     });
 
     ReactDOM.render(
-      <CommentBox url="/api/comments" pollInterval={2000} />,
+      <CheckpointBox url="/api/comments" pollInterval={2000} />,
       document.getElementById('content')
     );
-
-    ReactDOM.render(
-      <CommentBox url="/api/comments" />,
-      document.getElementById('content')
-    );
-
 
     </script>
   </body>

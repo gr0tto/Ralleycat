@@ -1,12 +1,12 @@
 [
     {
         "id": 1388534400000,
-        "author": "Pete Hunt",
-        "text": "Hey there!"
+        "address": "Pete Hunt",
+        "question": "Hey there!"
     },
     {
         "id": 1420070400000,
-        "author": "Paul O'shennannnigandyydz!!!!!! Jia!",
-        "text": "React is *great*!"
+        "address": "Paul O'shennannnigandyydz!!!!!! Jia!",
+        "question": "React is *great*!"
     }
 ]
