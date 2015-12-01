@@ -45,10 +45,11 @@ app.post('/api/comments', function(req, res) {
     // NOTE: In a real implementation, we would likely rely on a database or
     // some other approach (e.g. UUIDs) to ensure a globally unique id. We'll
     // treat Date.now() as unique-enough for our purposes.
+    console.log(req);
     var newComment = {
       id: Date.now(),
-      author: req.body.author,
-      text: req.body.text,
+      address: req.body.address,
+      question: req.body.question
     };
     comments.push(newComment);
     fs.writeFile(COMMENTS_FILE, JSON.stringify(comments, null, 4), function(err) {
