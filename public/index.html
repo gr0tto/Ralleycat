@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>React Tutorial</title>
+    <title>RalleyCat</title>
     <!-- Not present in the tutorial. Just for basic styling. -->
     <link rel="stylesheet" href="css/base.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react.js"></script>
@@ -10,6 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGXOnDFfaTblS2iVrMl98lRstjNotVyEE"></script>
   </head>
   <body>
     <div id="content"></div>
@@ -50,19 +51,6 @@
       handleQuestionChange: function(e) {
         this.setState({question: e.target.value});
       },
-      /*
-      handleSubmit: function(e) {
-        e.preventDefault();
-        var address = this.state.address.trim();
-        var question = this.state.question.trim();
-        console.log("lisättiin address:" + address + " question:" + question);
-        if (!address || !question) {
-          return;
-        }
-        this.props.onCheckpointSubmit({address: address, question: question});
-        this.setState({address: '', question: ''});
-      },
-      */
       handleSubmit: function(e) {
         e.preventDefault();
         var address = this.state.address.trim();
@@ -70,11 +58,9 @@
         if (!address || !question) {
           return;
         }
-        // TODO: send request to the server
         console.log("lisättiin address:" + address + " question:" + question);
         this.props.onCheckpointSubmit({address: address, question: question});
         this.setState({address: '', question: ''});
-        console.log("palautettiin address:" + address + " question:" + question);
       },
       render: function() {
         return (
@@ -95,6 +81,28 @@
           </form>
         );
       }
+    });
+
+
+    var GMap = React.createClass({
+        render: function() {
+          return (
+              <div className="GMap">
+                <div ref="map_canvas">
+                  Rui rui
+                </div>
+              </div>
+          );
+        },
+        componentDidMount: function() {
+          //Create the map after the component has been rendered because we need to manipulate the DOM for Google
+          var mapOptions = {
+            center: { lat: -34.397, lng: 150.644},
+            minZoom: 9,
+            zoom: 10
+          };
+          new google.maps.Map(this.refs.map_canvas.getDOMNode(), mapOptions);
+        }
     });
 
 
@@ -140,10 +148,12 @@
             <h1>Add a checkpoint</h1>
             <CheckpointForm onCheckpointSubmit={this.handleCheckpointSubmit} />
             <CheckpointList data={this.state.data} />
+            <GMap />
           </div>
         );
       }
     });
+
 
     ReactDOM.render(
       <CheckpointBox url="/api/checkpoints" pollInterval={2000} />,
@@ -151,5 +161,6 @@
     );
 
     </script>
+
   </body>
 </html>
