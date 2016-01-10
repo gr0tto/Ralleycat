@@ -85,6 +85,14 @@
 
 
     var GMap = React.createClass({
+        getDefaultProps: function () {
+            // Centers the props of map to center of Helsinki by default
+            return {
+                zoom: 12,
+                mapCenterLat: 60.173308,
+                mapCenterLng: 24.941046,
+            };
+        },
         render: function() {
           return (
               <div className="gmap">
@@ -94,12 +102,22 @@
         componentDidMount: function() {
           //Create the map after the component has been rendered because we need to manipulate the DOM for Google
           var mapOptions = {
-            center: { lat: 60.273, lng: 24.941},
-            minZoom: 9,
-            zoom: 10
+            center: this.mapCenterLatLng(),
+            minZoom: 10,
+            zoom: this.props.zoom
           };
           // Tällä tavalla suostuu vihdoin rendautumaan!
-          new google.maps.Map(ReactDOM.findDOMNode(this), mapOptions);
+          var map = new google.maps.Map(ReactDOM.findDOMNode(this), mapOptions);
+          this.setState({map: map});
+        },
+        mapCenterLatLng: function () {
+            // Returns the center coordinates of the currently visible map
+            var props = this.props;
+            return new google.maps.LatLng(props.mapCenterLat, props.mapCenterLng);
+        },
+        setMarker: function () {
+            // Adds a marker to the map and centers the map around the marker
+            var marker = new google.maps.Marker({position: this.mapCenterLatLng(), title: 'Checkpoint!', map: map});
         }
     });
 
