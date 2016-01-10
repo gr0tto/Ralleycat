@@ -28,14 +28,14 @@
 
     var CheckpointList = React.createClass({
       render: function() {
-        var commentNodes = this.props.data.map(function(checkpoint) {
+        var checkpointNodes = this.props.data.map(function(checkpoint) {
           return (
             <Checkpoint address={checkpoint.address} question={checkpoint.question} key={checkpoint.id} />
           );
         });
         return (
           <div className="checkpointList">
-            {commentNodes}
+            {checkpointNodes}
           </div>
         );
       }
@@ -91,9 +91,11 @@
                 zoom: 12,
                 mapCenterLat: 60.173308,
                 mapCenterLng: 24.941046,
+                lastCheckpoint: null
             };
         },
         render: function() {
+          this.setMarker(this.props.lastCheckpoint);
           return (
               <div className="gmap">
               </div>
@@ -106,18 +108,42 @@
             minZoom: 10,
             zoom: this.props.zoom
           };
-          // Tällä tavalla suostuu vihdoin rendautumaan!
           var map = new google.maps.Map(ReactDOM.findDOMNode(this), mapOptions);
           this.setState({map: map});
+          //this.setMarker(this.props.lastCheckpoint);
         },
         mapCenterLatLng: function () {
             // Returns the center coordinates of the currently visible map
             var props = this.props;
             return new google.maps.LatLng(props.mapCenterLat, props.mapCenterLng);
         },
-        setMarker: function () {
-            // Adds a marker to the map and centers the map around the marker
-            var marker = new google.maps.Marker({position: this.mapCenterLatLng(), title: 'Checkpoint!', map: map});
+        setMarker: function (checkpoint) {
+          if (checkpoint != null) {
+            console.log("Koitetaan merkata " + checkpoint.address);
+            var map = this.state.map;
+              var geocoder = new google.maps.Geocoder();
+              // Lähetetään osoite Googlen geocoderille ja piirretään marker kartalle
+              geocoder.geocode( { 'address': checkpoint.address}, function(results, status)
+              {
+                  if (status == google.maps.GeocoderStatus.OK)
+                  {
+                      var coordinates = results[0].geometry.location;
+                      console.log(coordinates);
+                      var marker = new google.maps.Marker(
+                      {
+                          map: map,
+                          position: coordinates
+                      });
+                      // Keskitetään kartta markkeriin ja zoomataan sisään
+                      map.zoom = 15;
+                      map.center = coordinates;
+                  }
+                  else
+                  {
+                      alert("Geocode was not successful for the following reason: " + status);
+                  }
+              });
+          }
         }
     });
 
@@ -136,15 +162,15 @@
           }.bind(this)
         });
       },
-      handleCheckpointSubmit: function(comment) {
-        console.log(comment);
+      handleCheckpointSubmit: function(checkpoint) {
+        console.log(checkpoint);
         $.ajax({
           url: this.props.url,
           dataType: 'json',
           type: 'POST',
-          data: comment,
+          data: checkpoint,
           success: function(data) {
-            this.setState({data: data});
+            this.setState({data: data, lastCheckpoint: checkpoint});
           }.bind(this),
           error: function(xhr, status, err) {
             console.error(this.props.url, status, err.toString());
@@ -152,7 +178,7 @@
         });
       },
       getInitialState: function() {
-        return {data: []};
+        return {data: [], lastCheckpoint: null};
       },
       componentDidMount: function() {
         this.loadCheckpointsFromServer();
@@ -164,7 +190,7 @@
             <h1>Add a checkpoint</h1>
             <CheckpointForm onCheckpointSubmit={this.handleCheckpointSubmit} />
             <CheckpointList data={this.state.data} />
-            <GMap />
+            <GMap lastCheckpoint={this.state.lastCheckpoint}/>
           </div>
         );
       }

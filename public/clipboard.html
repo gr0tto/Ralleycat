@@ -38,3 +38,41 @@
           });
       */
     });
+
+    /*
+    if (checkpoint != null) {
+      console.log("Koitetaan merkata " + address);
+      var map = this.state.map;
+      var geocoder = new google.maps.Geocoder();
+
+      geocoder.geocode( { 'address': address}, function(results, status)
+      {
+          if (status == google.maps.GeocoderStatus.OK)
+          {
+              map.setCenter(results[0].geometry.location);
+              var marker = new google.maps.Marker(
+              {
+                  map: map,
+                  position: results[0].geometry.location
+              });
+          }
+          else
+          {
+              alert("Geocode was not successful for the following reason: " + status);
+          }
+      });
+
+      /*
+      geocoder.geocode( { 'address': address}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          var coordinates = results[0].geometry.location;
+          console.log(coordinates);
+          var marker = new google.maps.Marker(
+          {
+              map: map,
+              position: coordinates
+          });
+        } else {
+          alert("Geocode was not successful for the following reason: " + status);
+        };
+    }; */
