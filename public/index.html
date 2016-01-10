@@ -87,21 +87,19 @@
     var GMap = React.createClass({
         render: function() {
           return (
-              <div className="GMap">
-                <div ref="map_canvas">
-                  Rui rui
-                </div>
+              <div className="gmap">
               </div>
           );
         },
         componentDidMount: function() {
           //Create the map after the component has been rendered because we need to manipulate the DOM for Google
           var mapOptions = {
-            center: { lat: -34.397, lng: 150.644},
+            center: { lat: 60.273, lng: 24.941},
             minZoom: 9,
             zoom: 10
           };
-          new google.maps.Map(this.refs.map_canvas.getDOMNode(), mapOptions);
+          // Tällä tavalla suostuu vihdoin rendautumaan!
+          new google.maps.Map(ReactDOM.findDOMNode(this), mapOptions);
         }
     });
 
