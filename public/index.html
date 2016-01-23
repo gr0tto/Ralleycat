@@ -90,17 +90,11 @@
 
     var GMap = React.createClass({
         getDefaultProps: function () {
-            // Centers the props of map to center of Helsinki by default
-            console.log("Kutsuttiin Gmap getdefaultpropsia.")
-            return {
-                zoom: 12,
-                mapCenterLat: 60.173308,
-                mapCenterLng: 24.941046,
-            };
+            console.log("Kutsuttiin Gmap getdefaultpropsia.");
         },
         render: function() {
           //Alla olevaa ei kantsi tehdä tässä, niin ei pommita Googlea koko ajan..
-          this.setMarker(this.props.address);
+          //this.setMarker(this.props.address);
           return (
               <div className="gmap">
               </div>
@@ -108,12 +102,8 @@
         },
         componentDidMount: function() {
           //Create the map after the component has been rendered because we need to manipulate the DOM for Google
-          var mapOptions = {
-            center: this.mapCenterLatLng(),
-            minZoom: 10,
-            zoom: this.props.zoom
-          };
-          var map = new google.maps.Map(ReactDOM.findDOMNode(this), mapOptions);
+          console.log("Koitetaan tehdä gmapin componentdidmount");
+          var map = new google.maps.Map(ReactDOM.findDOMNode(this), this.props.mapOptions);
           this.setState({map: map});
         },
         mapCenterLatLng: function () {
@@ -182,10 +172,17 @@
         });
       },
       handleAddressBlur: function(newAddress) {
+        // TODO: Tänne pitäisi tehdä uuden osoitteen perusteella uusien koordinaattien asetus
+        
         this.setState({address: newAddress});
       },
       getInitialState: function() {
-        return {data: [], address: null};
+        var initialOptions = {
+          center: {lat: 60.173308, lng: 24.941046},
+          minZoom: 10,
+          zoom: 15,
+        };
+        return {data: [], mapOptions: initialOptions};
       },
       componentDidMount: function() {
         this.loadCheckpointsFromServer();
@@ -197,7 +194,7 @@
             <h1>Add a checkpoint</h1>
             <CheckpointForm onCheckpointSubmit={this.handleCheckpointSubmit} onAddressBlur={this.handleAddressBlur}/>
             <CheckpointList data={this.state.data} />
-            <GMap address={this.state.address}/>
+            <GMap mapOptions={this.state.mapOptions}/>
           </div>
         );
       }
