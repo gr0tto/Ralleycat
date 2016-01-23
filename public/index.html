@@ -93,8 +93,19 @@
             console.log("Kutsuttiin Gmap getdefaultpropsia.");
         },
         render: function() {
-          //Alla olevaa ei kantsi tehdä tässä, niin ei pommita Googlea koko ajan..
-          //this.setMarker(this.props.address);
+          // LOL ei kai näin saa tehdä?
+          if (this.state != null) {
+            var map = this.state.map;
+            map.setOptions(this.props.mapOptions);
+            if (this.props.address != null) {
+              var marker = new google.maps.Marker(
+              {
+                  map: map,
+                  position: this.state.map.center
+              });
+
+            }
+          }
           return (
               <div className="gmap">
               </div>
@@ -185,8 +196,6 @@
                   console.log(coordinates);
                   mapOptions.zoom = 15;
                   mapOptions.center = coordinates;
-                  //map.zoom = 15;
-                  //map.center = coordinates;
               }
               else
               {
@@ -201,7 +210,7 @@
         var initialOptions = {
           center: {lat: 60.173308, lng: 24.941046},
           minZoom: 10,
-          zoom: 15,
+          zoom: 10,
         };
         return {data: [], mapOptions: initialOptions};
       },
@@ -215,7 +224,7 @@
             <h1>Add a checkpoint</h1>
             <CheckpointForm onCheckpointSubmit={this.handleCheckpointSubmit} onAddressBlur={this.handleAddressBlur}/>
             <CheckpointList data={this.state.data} />
-            <GMap mapOptions={this.state.mapOptions}/>
+            <GMap mapOptions={this.state.mapOptions} address={this.state.address}/>
           </div>
         );
       }
