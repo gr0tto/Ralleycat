@@ -47,6 +47,7 @@
       },
       handleAddressChange: function(e) {
         this.setState({address: e.target.value});
+        //GMAP.setState(.. tänne zoomin ja osoitteen asettavaa tavaraa)
       },
       handleQuestionChange: function(e) {
         this.setState({question: e.target.value});
@@ -70,6 +71,7 @@
               placeholder="Address"
               value={this.state.address}
               onChange={this.handleAddressChange}
+              // Olisko tähän joku onblur() tms, jolla voisin katsoa kun kentästä poistutaan > Päivitetään osoite, markkeri ja zoomi
             />
             <input
               type="text"
@@ -190,7 +192,8 @@
             <h1>Add a checkpoint</h1>
             <CheckpointForm onCheckpointSubmit={this.handleCheckpointSubmit} />
             <CheckpointList data={this.state.data} />
-            <GMap lastCheckpoint={this.state.lastCheckpoint}/>
+            // Tänne muutettava zoomi mukaan
+            <GMap lastCheckpoint={this.state.lastCheckpoint} zoom={1}/>
           </div>
         );
       }
