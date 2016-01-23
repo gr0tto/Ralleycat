@@ -47,7 +47,9 @@
       },
       handleAddressChange: function(e) {
         this.setState({address: e.target.value});
-        //GMAP.setState(.. tänne zoomin ja osoitteen asettavaa tavaraa)
+      },
+      handleAddressBlur: function(e) {
+        this.props.onAddressBlur(e.target.value);
       },
       handleQuestionChange: function(e) {
         this.setState({question: e.target.value});
@@ -71,7 +73,7 @@
               placeholder="Address"
               value={this.state.address}
               onChange={this.handleAddressChange}
-              // Olisko tähän joku onblur() tms, jolla voisin katsoa kun kentästä poistutaan > Päivitetään osoite, markkeri ja zoomi
+              onBlur={this.handleAddressBlur}
             />
             <input
               type="text"
@@ -89,15 +91,16 @@
     var GMap = React.createClass({
         getDefaultProps: function () {
             // Centers the props of map to center of Helsinki by default
+            console.log("Kutsuttiin Gmap getdefaultpropsia.")
             return {
                 zoom: 12,
                 mapCenterLat: 60.173308,
                 mapCenterLng: 24.941046,
-                lastCheckpoint: null
             };
         },
         render: function() {
-          this.setMarker(this.props.lastCheckpoint);
+          //Alla olevaa ei kantsi tehdä tässä, niin ei pommita Googlea koko ajan..
+          this.setMarker(this.props.address);
           return (
               <div className="gmap">
               </div>
@@ -112,20 +115,19 @@
           };
           var map = new google.maps.Map(ReactDOM.findDOMNode(this), mapOptions);
           this.setState({map: map});
-          //this.setMarker(this.props.lastCheckpoint);
         },
         mapCenterLatLng: function () {
             // Returns the center coordinates of the currently visible map
             var props = this.props;
             return new google.maps.LatLng(props.mapCenterLat, props.mapCenterLng);
         },
-        setMarker: function (checkpoint) {
-          if (checkpoint != null) {
-            console.log("Koitetaan merkata " + checkpoint.address);
+        setMarker: function (address) {
+          if (address != null && address != '') {
+            console.log("Koitetaan merkata " + address);
             var map = this.state.map;
               var geocoder = new google.maps.Geocoder();
               // Lähetetään osoite Googlen geocoderille ja piirretään marker kartalle
-              geocoder.geocode( { 'address': checkpoint.address}, function(results, status)
+              geocoder.geocode( { 'address': address}, function(results, status)
               {
                   if (status == google.maps.GeocoderStatus.OK)
                   {
@@ -142,7 +144,7 @@
                   }
                   else
                   {
-                      alert("Geocode was not successful for the following reason: " + status);
+                      console.log("Geocode was not successful for the following reason: " + status);
                   }
               });
           }
@@ -179,8 +181,11 @@
           }.bind(this)
         });
       },
+      handleAddressBlur: function(newAddress) {
+        this.setState({address: newAddress});
+      },
       getInitialState: function() {
-        return {data: [], lastCheckpoint: null};
+        return {data: [], address: null};
       },
       componentDidMount: function() {
         this.loadCheckpointsFromServer();
@@ -190,10 +195,9 @@
         return (
           <div className="checkpointBox">
             <h1>Add a checkpoint</h1>
-            <CheckpointForm onCheckpointSubmit={this.handleCheckpointSubmit} />
+            <CheckpointForm onCheckpointSubmit={this.handleCheckpointSubmit} onAddressBlur={this.handleAddressBlur}/>
             <CheckpointList data={this.state.data} />
-            // Tänne muutettava zoomi mukaan
-            <GMap lastCheckpoint={this.state.lastCheckpoint} zoom={1}/>
+            <GMap address={this.state.address}/>
           </div>
         );
       }
