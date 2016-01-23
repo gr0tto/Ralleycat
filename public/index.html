@@ -173,8 +173,29 @@
       },
       handleAddressBlur: function(newAddress) {
         // TODO: Tänne pitäisi tehdä uuden osoitteen perusteella uusien koordinaattien asetus
-        
-        this.setState({address: newAddress});
+        if (newAddress != null && newAddress != '') {
+          console.log("Koitetaan merkata " + newAddress);
+          //var map = this.state.map;
+          var mapOptions = this.state.mapOptions;
+          var geocoder = new google.maps.Geocoder();
+          // Lähetetään osoite Googlen geocoderille ja piirretään marker kartalle
+          geocoder.geocode( { 'address': newAddress}, function(results, status) {
+              if (status == google.maps.GeocoderStatus.OK) {
+                  var coordinates = results[0].geometry.location;
+                  console.log(coordinates);
+                  mapOptions.zoom = 15;
+                  mapOptions.center = coordinates;
+                  //map.zoom = 15;
+                  //map.center = coordinates;
+              }
+              else
+              {
+                  console.log("Geocode was not successful for the following reason: " + status);
+              }
+          });
+        }
+        // Alla olevalla saattoi olla joku tarkoitus..
+        //this.setState({address: newAddress});
       },
       getInitialState: function() {
         var initialOptions = {
