@@ -74,13 +74,13 @@
               value={this.state.address}
               onChange={this.handleAddressChange}
               onBlur={this.handleAddressBlur}
-            />
+            /><br/>
             <input
               type="text"
               placeholder="Question"
               value={this.state.question}
               onChange={this.handleQuestionChange}
-            />
+            /><br/>
             <input type="submit" value="Add" />
           </form>
         );
@@ -183,7 +183,6 @@
         });
       },
       handleAddressBlur: function(newAddress) {
-        // TODO: Tänne pitäisi tehdä uuden osoitteen perusteella uusien koordinaattien asetus
         if (newAddress != null && newAddress != '') {
           console.log("Koitetaan merkata " + newAddress);
           //var map = this.state.map;
@@ -194,7 +193,7 @@
               if (status == google.maps.GeocoderStatus.OK) {
                   var coordinates = results[0].geometry.location;
                   console.log(coordinates);
-                  mapOptions.zoom = 15;
+                  mapOptions.zoom = 16;
                   mapOptions.center = coordinates;
               }
               else
@@ -223,8 +222,8 @@
           <div className="checkpointBox">
             <h1>Add a checkpoint</h1>
             <CheckpointForm onCheckpointSubmit={this.handleCheckpointSubmit} onAddressBlur={this.handleAddressBlur}/>
-            <CheckpointList data={this.state.data} />
             <GMap mapOptions={this.state.mapOptions} address={this.state.address}/>
+            <CheckpointList data={this.state.data} />
           </div>
         );
       }
