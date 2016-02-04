@@ -30,7 +30,7 @@
       render: function() {
         var checkpointNodes = this.props.data.map(function(checkpoint) {
           return (
-            <Checkpoint address={checkpoint.address} question={checkpoint.question} key={checkpoint.id} />
+            <Checkpoint address={checkpoint.address} question={checkpoint.question} key={-checkpoint.id} />
           );
         });
         return (
@@ -48,7 +48,9 @@
       handleAddressChange: function(e) {
         this.setState({address: e.target.value});
       },
-      handleAddressBlur: function(e) {
+      handleAddressBlur: function (e) {
+        // Kun osoitekentästä poistutaan, zoomataan kartta oikeaan kohtaan
+        //var map = new google.maps.Map(ReactDOM.findDOMNode(this), mapOptions);
         this.props.onAddressBlur(e.target.value);
       },
       handleQuestionChange: function(e) {
@@ -81,7 +83,7 @@
               value={this.state.question}
               onChange={this.handleQuestionChange}
             /><br/>
-            <input type="submit" value="Add" />
+            <input type="submit" className="myBtn" value="Add checkpoint" />
           </form>
         );
       }
@@ -97,14 +99,6 @@
           if (this.state != null) {
             var map = this.state.map;
             map.setOptions(this.props.mapOptions);
-            if (this.props.address != null) {
-              var marker = new google.maps.Marker(
-              {
-                  map: map,
-                  position: this.state.map.center
-              });
-
-            }
           }
           return (
               <div className="gmap">
@@ -118,13 +112,19 @@
           this.setState({map: map});
         },
         mapCenterLatLng: function () {
-            // Returns the center coordinates of the currently visible map
-            var props = this.props;
-            return new google.maps.LatLng(props.mapCenterLat, props.mapCenterLng);
+          // Returns the center coordinates of the currently visible map
+          var props = this.props;
+          return new google.maps.LatLng(props.mapCenterLat, props.mapCenterLng);
         },
-        setMarker: function (address) {
-          if (address != null && address != '') {
-            console.log("Koitetaan merkata " + address);
+        setMarker: function (coordinates) {
+            var marker = new google.maps.Marker(
+            {
+                map: this.state.map,
+                position: coordinates
+            });
+          }
+            /*
+            console.log("Koitetaan merkata " + checkpoint.address);
             var map = this.state.map;
               var geocoder = new google.maps.Geocoder();
               // Lähetetään osoite Googlen geocoderille ja piirretään marker kartalle
@@ -148,8 +148,7 @@
                       console.log("Geocode was not successful for the following reason: " + status);
                   }
               });
-          }
-        }
+              */
     });
 
 
@@ -185,16 +184,18 @@
       handleAddressBlur: function(newAddress) {
         if (newAddress != null && newAddress != '') {
           console.log("Koitetaan merkata " + newAddress);
-          //var map = this.state.map;
           var mapOptions = this.state.mapOptions;
           var geocoder = new google.maps.Geocoder();
-          // Lähetetään osoite Googlen geocoderille ja piirretään marker kartalle
+          // Lähetetään osoite Googlen geocoderille ja zoomaillaan
           geocoder.geocode( { 'address': newAddress}, function(results, status) {
               if (status == google.maps.GeocoderStatus.OK) {
                   var coordinates = results[0].geometry.location;
                   console.log(coordinates);
-                  mapOptions.zoom = 16;
+                  mapOptions.zoom = 24;
                   mapOptions.center = coordinates;
+                  // Piirretään marker
+                  //console.log("Jepu jee ", GMap);
+                  //GMap.setMarker(coordinates);
               }
               else
               {
@@ -202,8 +203,6 @@
               }
           });
         }
-        // Alla olevalla saattoi olla joku tarkoitus..
-        //this.setState({address: newAddress});
       },
       getInitialState: function() {
         var initialOptions = {
